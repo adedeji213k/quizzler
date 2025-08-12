@@ -18,7 +18,8 @@
     "next-auth": "^4.24.11",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "streamifier": "^0.1.1"
+    "streamifier": "^0.1.1",
+    "daisyui": "^4.12.10"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
