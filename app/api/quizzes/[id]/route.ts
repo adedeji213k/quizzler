@@ -1,7 +1,33 @@
 import { NextResponse } from "next/server";
 import { createConnection } from "@/lib/db";
-import { getServerSession } from "next-auth"; // New import
-import { authOptions } from "@/lib/auth"; // New import
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  const db = await createConnection();
+
+  try {
+    const [rows]: any = await db.query(
+      "SELECT id, title, description, time_limit_minutes FROM quizzes WHERE id = ?",
+      [params.id]
+    );
+
+    if (rows.length === 0) {
+      return NextResponse.json({ error: "Quiz not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ quiz: rows[0] });
+  } catch (error) {
+    console.error("Error fetching quiz:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch quiz" },
+      { status: 500 }
+    );
+  }
+}
 
 export async function DELETE(
   request: Request,
@@ -10,7 +36,6 @@ export async function DELETE(
   const db = await createConnection();
 
   try {
-    // 1. Get the session to verify the user
     const session = await getServerSession(authOptions);
     const userId = (session?.user as any)?.id;
 
@@ -20,7 +45,6 @@ export async function DELETE(
 
     const quizId = params.id;
 
-    // 2. Verify that the logged-in user owns the quiz
     const [quizRows]: any = await db.query(
       "SELECT user_id FROM quizzes WHERE id = ?",
       [quizId]
@@ -34,11 +58,10 @@ export async function DELETE(
     }
 
     await db.beginTransaction();
-
     await db.query("DELETE FROM questions WHERE quiz_id = ?", [quizId]);
     await db.query("DELETE FROM quizzes WHERE id = ?", [quizId]);
-
     await db.commit();
+
     return NextResponse.json({ success: true });
   } catch (error) {
     await db.rollback();
@@ -50,8 +73,6 @@ export async function DELETE(
   }
 }
 
-// ------------------------------------------------------------------------------------------------------------------------------------------------
-
 export async function PATCH(
   req: Request,
   { params }: { params: { id: string } }
@@ -59,7 +80,6 @@ export async function PATCH(
   const db = await createConnection();
 
   try {
-    // 1. Get the session to verify the user
     const session = await getServerSession(authOptions);
     const userId = (session?.user as any)?.id;
 
@@ -69,7 +89,6 @@ export async function PATCH(
 
     const quizId = params.id;
 
-    // 2. Verify that the logged-in user owns the quiz
     const [quizRows]: any = await db.query(
       "SELECT user_id FROM quizzes WHERE id = ?",
       [quizId]
