@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createConnection } from "@/lib/db";
 import { getServerSession } from "next-auth/next"; // or your auth helper
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'; // adjust path
+import { authOptions } from '@/lib/auth'; // adjust path
 
 export async function GET(request: Request) {
   try {

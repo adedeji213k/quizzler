@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createConnection } from '@/lib/db';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'; // so we can reuse your NextAuth config
+import { authOptions } from '@/lib/auth';// so we can reuse your NextAuth config
 
 export async function GET(request: Request) {
   try {
