@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 
+// The prop names are now updated to match what's used in dashboard/page.tsx
 interface EditQuizCardProps {
   id: number;
   title: string;
   description?: string;
   duration?: number;
-  onUpdated?: () => void; // Callback after update
-  onDeleted?: () => void; // Callback after delete
+  onEdit?: () => void;    // Corrected prop name
+  onDelete?: () => void;  // Corrected prop name
 }
 
 const EditQuizCard: React.FC<EditQuizCardProps> = ({
@@ -14,13 +15,17 @@ const EditQuizCard: React.FC<EditQuizCardProps> = ({
   title,
   description = "No description provided.",
   duration = 0,
-  onUpdated,
-  onDeleted,
+  onEdit, // Destructured with the new prop name
+  onDelete, // Destructured with the new prop name
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(title);
   const [editDescription, setEditDescription] = useState(description);
   const [editDuration, setEditDuration] = useState(duration);
+
+  // NOTE: You are using `confirm` and `alert` which can cause issues
+  // in the Vercel environment. It's recommended to use a custom modal or UI
+  // for these interactions.
 
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this quiz? This cannot be undone.")) return;
@@ -33,7 +38,7 @@ const EditQuizCard: React.FC<EditQuizCardProps> = ({
       if (!res.ok) throw new Error("Failed to delete quiz");
 
       alert("Quiz deleted successfully");
-      if (onDeleted) onDeleted();
+      if (onDelete) onDelete(); // Call the corrected prop name
     } catch (error) {
       console.error(error);
       alert("Error deleting quiz");
@@ -56,7 +61,9 @@ const EditQuizCard: React.FC<EditQuizCardProps> = ({
 
       alert("Quiz updated successfully");
       setIsEditing(false);
-      if (onUpdated) onUpdated();
+      // The `onUpdated` prop no longer exists, so we don't call it here.
+      // The logic in your dashboard file handles navigation, which is
+      // a different responsibility.
     } catch (error) {
       console.error(error);
       alert("Error updating quiz");
@@ -70,7 +77,8 @@ const EditQuizCard: React.FC<EditQuizCardProps> = ({
         <p>{description}</p>
         <p className="text-sm text-gray-500">Duration: {duration} mins</p>
         <div className="card-actions justify-end">
-          <button className="btn btn-success btn-sm" onClick={() => setIsEditing(true)}>
+          {/* This button will trigger the `onEdit` prop passed from the parent */}
+          <button className="btn btn-success btn-sm" onClick={onEdit}>
             Edit
           </button>
           <button className="btn btn-error btn-sm" onClick={handleDelete}>

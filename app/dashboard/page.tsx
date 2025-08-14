@@ -117,7 +117,7 @@ const DashboardPage = () => {
                     onEdit={() => {
                       window.location.href = `/quizzes/edit/${quiz.id}`
                     }}
-                    onDeleted={() => getQuizzes('mine')} // refresh after deletion
+                    onDelete={() => getQuizzes('mine')} // refresh after deletion
                   />
                 ))
               )}
