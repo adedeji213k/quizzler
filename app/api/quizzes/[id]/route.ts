@@ -5,14 +5,15 @@ import { authOptions } from "@/lib/auth";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const db = await createConnection();
+  const { id } = await params;
 
   try {
     const [rows]: any = await db.query(
       "SELECT id, title, description, time_limit_minutes FROM quizzes WHERE id = ?",
-      [params.id]
+      [id]
     );
 
     if (rows.length === 0) {
@@ -31,9 +32,10 @@ export async function GET(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const db = await createConnection();
+  const { id } = await params;
 
   try {
     const session = await getServerSession(authOptions);
@@ -43,7 +45,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const quizId = params.id;
+    const quizId = id;
 
     const [quizRows]: any = await db.query(
       "SELECT user_id FROM quizzes WHERE id = ?",
@@ -75,9 +77,10 @@ export async function DELETE(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const db = await createConnection();
+  const { id } = await params;
 
   try {
     const session = await getServerSession(authOptions);
@@ -87,7 +90,7 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const quizId = params.id;
+    const quizId = id;
 
     const [quizRows]: any = await db.query(
       "SELECT user_id FROM quizzes WHERE id = ?",
